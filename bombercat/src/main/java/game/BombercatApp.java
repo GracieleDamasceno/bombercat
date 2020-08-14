@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import logic.GameBackground;
 
 
-public class BomberCat extends GameApplication{
+public class BombercatApp extends GameApplication{
 
     private Entity player;
     public static final int WIDTH = 600;
