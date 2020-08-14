@@ -1,4 +1,4 @@
-package bombergirl;
+package game;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.entity.Entities;
@@ -10,12 +10,10 @@ import com.almasb.fxgl.texture.Texture;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-
-import java.util.Map;
+import logic.GameBackground;
 
 
-public class BomberGirlApp extends GameApplication{
+public class BomberCat extends GameApplication{
 
     private Entity player;
     public static final int WIDTH = 600;
@@ -30,9 +28,9 @@ public class BomberGirlApp extends GameApplication{
     protected void initSettings(GameSettings settings) {
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
-        settings.setTitle("BomberGirl");
+        settings.setTitle("Bombercat");
         settings.setVersion("0.1");
-        settings.setIntroEnabled(true); // turn off intro
+        settings.setIntroEnabled(false); // turn off intro
         settings.setMenuEnabled(true);  // turn off menus
     }
 
