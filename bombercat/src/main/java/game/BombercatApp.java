@@ -71,13 +71,21 @@ public class BombercatApp extends GameApplication{
         getGameWorld().addEntityFactory(new BombercatFactory());
         spawn("cat", 0, WIDGTH - (WIDGTH - 20));
         spawn("mouse", 0, WIDGTH - (WIDGTH - 80));
+        spawn("fire", 0, WIDGTH - (WIDGTH - 160));
     }
 
     @Override
     protected void initPhysics() {
-        FXGL.onCollision(EntityType.CAT, EntityType.MOUSE, (proj, enemy) -> {
-            proj.removeFromWorld();
-            enemy.removeFromWorld();
+        FXGL.onCollision(EntityType.CAT, EntityType.MOUSE, (cat, mouse) -> {
+            cat.removeFromWorld();
+            mouse.removeFromWorld();
+            FXGL.showMessage("YOU DIED!", () -> {
+                getGameController().startNewGame();
+            });
+        });
+        FXGL.onCollision(EntityType.CAT, EntityType.FIRE, (cat, bomb) -> {
+            cat.removeFromWorld();
+            bomb.removeFromWorld();
             FXGL.showMessage("YOU DIED!", () -> {
                 getGameController().startNewGame();
             });

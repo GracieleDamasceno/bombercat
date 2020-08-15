@@ -40,6 +40,15 @@ public class BombercatFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("fire")
+    public Entity newExplosion(SpawnData data) {
+        return entityBuilder(data)
+                .type(FIRE)
+                .collidable()
+                .viewWithBBox(texture("fire.png", WIDGTH, HEIGHT))
+                .build();
+    }
+
     @Spawns("wall")
     public Entity newWall(SpawnData data) {
         return entityBuilder(data)
