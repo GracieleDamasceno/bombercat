@@ -18,8 +18,9 @@ public class BombercatApp extends GameApplication{
 
     private Entity entity;
 
-    private static final int WIDGTH = 800;
-    private static final int HEIGHT = 800;
+    private static final int WIDTH = 760; //600
+    private static final int HEIGHT = 600; //440
+    private static final int BRICK_SIZE = 40;
 
     public static void main(String[] args) {
         launch(args);
@@ -29,49 +30,50 @@ public class BombercatApp extends GameApplication{
     protected void initSettings(GameSettings settings) {
         settings.setTitle("Bombercat");
         settings.setVersion("0.1");
-        settings.setWidth(WIDGTH);
+        settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
     }
 
     @Override
     protected void initInput() {
+        int PIXEL = 2;
         Input input = FXGL.getInput();
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateX(5); // move right 5 pixels
+                getGameWorld().getSingleton(EntityType.CAT).translateX(PIXEL); // move right 5 pixels
             }
         }, KeyCode.D);
 
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateX(-5); // move left 5 pixels
+                getGameWorld().getSingleton(EntityType.CAT).translateX(-PIXEL); // move left 5 pixels
             }
         }, KeyCode.A);
 
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateY(-5); // move up 5 pixels
+                getGameWorld().getSingleton(EntityType.CAT).translateY(-PIXEL); // move up 5 pixels
             }
         }, KeyCode.W);
 
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateY(5); // move down 5 pixels
+                getGameWorld().getSingleton(EntityType.CAT).translateY(PIXEL); // move down 5 pixels
             }
         }, KeyCode.S);
     }
 
     @Override
     protected void initGame() {
-        getGameScene().setBackgroundColor(Color.DARKGRAY);
+        getGameScene().setBackgroundColor(Color.GREEN);
         getGameWorld().addEntityFactory(new BombercatFactory());
-        spawn("cat", 0, WIDGTH - (WIDGTH - 20));
-        spawn("mouse", 0, WIDGTH - (WIDGTH - 80));
-        spawn("fire", 0, WIDGTH - (WIDGTH - 160));
+        spawn("cat", 200, WIDTH - (WIDTH - 40));
+        spawn("mouse", 120, WIDTH - (WIDTH - 80));
+        spawn("fire", 120, WIDTH - (WIDTH - 160));
     }
 
     @Override
@@ -93,6 +95,15 @@ public class BombercatApp extends GameApplication{
     }
     @Override
     protected void initUI() {
-        //Set background: See here https://github.com/AlmasB/FXGL/wiki/Adding-Images-and-Sounds-%28FXGL-11%29
+        for (int i = 0; i < (WIDTH / BRICK_SIZE); i++) {
+            for (int j = 0; j < (HEIGHT / BRICK_SIZE); j++) {
+                if (i == 0 || j == 0 || i == (WIDTH / BRICK_SIZE) - 1 || j == (HEIGHT / BRICK_SIZE) - 1 ||
+                ((i + 1) % 2 != 0 && (j + 1) % 2 != 0)) {
+                    spawn("brick", i * BRICK_SIZE , j * BRICK_SIZE);
+                }
+
+            }
+        }
+
     }
 }
