@@ -78,6 +78,13 @@ public class BombercatApp extends GameApplication{
         FXGL.onCollision(EntityType.CAT, EntityType.MOUSE, (proj, enemy) -> {
             proj.removeFromWorld();
             enemy.removeFromWorld();
+            FXGL.showMessage("YOU DIED!", () -> {
+                getGameController().startNewGame();
+            });
         });
+    }
+    @Override
+    protected void initUI() {
+        //Set background: See here https://github.com/AlmasB/FXGL/wiki/Adding-Images-and-Sounds-%28FXGL-11%29
     }
 }
