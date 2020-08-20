@@ -4,23 +4,34 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.pathfinding.CellState;
+import com.almasb.fxgl.pathfinding.astar.AStarGrid;
+import component.PlayerComponent;
 import entity.EntityType;
 import factory.BombercatFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import static entity.EntityType.BRICK;
+import static entity.EntityType.WALL;
 
 
 public class BombercatApp extends GameApplication{
 
-    private Entity entity;
-
-    private static final int WIDTH = 760; //600
+    private static final int WIDTH = 600; //600
     private static final int HEIGHT = 600; //440
     private static final int BRICK_SIZE = 40;
+
+    private AStarGrid grid;
+    private PlayerComponent playerComponent;
+    private Entity player;
+
+    public AStarGrid getGrid() {
+        return grid;
+    }
 
     public static void main(String[] args) {
         launch(args);
@@ -36,44 +47,54 @@ public class BombercatApp extends GameApplication{
 
     @Override
     protected void initInput() {
-        int PIXEL = 2;
-        Input input = FXGL.getInput();
-        input.addAction(new UserAction("Move Right") {
+        getInput().addAction(new UserAction("Left") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateX(PIXEL); // move right 5 pixels
-            }
-        }, KeyCode.D);
-
-        input.addAction(new UserAction("Move Left") {
-            @Override
-            protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateX(-PIXEL); // move left 5 pixels
+                playerComponent.left();
             }
         }, KeyCode.A);
 
-        input.addAction(new UserAction("Move Up") {
+        getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateY(-PIXEL); // move up 5 pixels
+               playerComponent.right();
+            }
+        }, KeyCode.D);
+
+        getInput().addAction(new UserAction("Up") {
+            @Override
+            protected void onAction() {
+                playerComponent.up();
             }
         }, KeyCode.W);
 
-        input.addAction(new UserAction("Move Down") {
+        getInput().addAction(new UserAction("Down") {
             @Override
             protected void onAction() {
-                getGameWorld().getSingleton(EntityType.CAT).translateY(PIXEL); // move down 5 pixels
+                playerComponent.down();
             }
         }, KeyCode.S);
+
     }
 
     @Override
     protected void initGame() {
-        getGameScene().setBackgroundColor(Color.GREEN);
         getGameWorld().addEntityFactory(new BombercatFactory());
-        spawn("cat", 200, WIDTH - (WIDTH - 40));
-        spawn("mouse", 120, WIDTH - (WIDTH - 80));
-        spawn("fire", 120, WIDTH - (WIDTH - 160));
+
+        Level level = getAssetLoader().loadLevel("0.txt", new TextLevelLoader(40, 40, '0'));
+        getGameWorld().setLevel(level);
+
+        spawn("BG");
+
+        grid = AStarGrid.fromWorld(getGameWorld(), 600, 600, 40, 40, type -> {
+            if (type.equals(WALL) || type.equals(BRICK))
+                return CellState.NOT_WALKABLE;
+
+            return CellState.WALKABLE;
+        });
+
+        player = spawn("cat");
+        playerComponent = player.getComponent(PlayerComponent.class);
     }
 
     @Override
@@ -92,18 +113,8 @@ public class BombercatApp extends GameApplication{
                 getGameController().startNewGame();
             });
         });
-    }
-    @Override
-    protected void initUI() {
-        for (int i = 0; i < (WIDTH / BRICK_SIZE); i++) {
-            for (int j = 0; j < (HEIGHT / BRICK_SIZE); j++) {
-                if (i == 0 || j == 0 || i == (WIDTH / BRICK_SIZE) - 1 || j == (HEIGHT / BRICK_SIZE) - 1 ||
-                ((i + 1) % 2 != 0 && (j + 1) % 2 != 0)) {
-                    spawn("brick", i * BRICK_SIZE , j * BRICK_SIZE);
-                }
+        FXGL.onCollision(EntityType.CAT, BRICK, (cat, brick) -> {
 
-            }
-        }
-
+        });
     }
 }
