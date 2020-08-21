@@ -1,7 +1,8 @@
-package game;
+package app;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
@@ -14,16 +15,14 @@ import entity.EntityType;
 import factory.BombercatFactory;
 import javafx.scene.input.KeyCode;
 
-import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
-import static entity.EntityType.BRICK;
-import static entity.EntityType.WALL;
+import static entity.EntityType.*;
 
 
 public class BombercatApp extends GameApplication{
 
-    private static final int WIDTH = 600; //600
-    private static final int HEIGHT = 600; //440
-    private static final int BRICK_SIZE = 40;
+    public static final int WIDTH = 600; //600
+    public static final int HEIGHT = 600; //440
+    public static final int BRICK_SIZE = 40;
 
     private AStarGrid grid;
     private PlayerComponent playerComponent;
@@ -47,74 +46,97 @@ public class BombercatApp extends GameApplication{
 
     @Override
     protected void initInput() {
-        getInput().addAction(new UserAction("Left") {
+        FXGL.getInput().addAction(new UserAction("Left") {
             @Override
             protected void onAction() {
                 playerComponent.left();
             }
         }, KeyCode.A);
 
-        getInput().addAction(new UserAction("Right") {
+        FXGL.getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
                playerComponent.right();
             }
         }, KeyCode.D);
 
-        getInput().addAction(new UserAction("Up") {
+        FXGL.getInput().addAction(new UserAction("Up") {
             @Override
             protected void onAction() {
                 playerComponent.up();
             }
         }, KeyCode.W);
 
-        getInput().addAction(new UserAction("Down") {
+        FXGL.getInput().addAction(new UserAction("Down") {
             @Override
             protected void onAction() {
                 playerComponent.down();
             }
         }, KeyCode.S);
+        FXGL.getInput().addAction(new UserAction("Bomb") {
+            @Override
+            protected void onActionBegin() {
+                playerComponent.placeBomb();
+            }
+        }, KeyCode.SPACE);
 
     }
 
     @Override
     protected void initGame() {
-        getGameWorld().addEntityFactory(new BombercatFactory());
+        FXGL.getGameWorld().addEntityFactory(new BombercatFactory());
 
-        Level level = getAssetLoader().loadLevel("0.txt", new TextLevelLoader(40, 40, '0'));
-        getGameWorld().setLevel(level);
+        Level level = FXGL.getAssetLoader().loadLevel("0.txt", new TextLevelLoader(40, 40, '0'));
+        FXGL.getGameWorld().setLevel(level);
 
-        spawn("BG");
+        FXGL.spawn("background");
 
-        grid = AStarGrid.fromWorld(getGameWorld(), 600, 600, 40, 40, type -> {
+        grid = AStarGrid.fromWorld(FXGL.getGameWorld(), 600, 600, 40, 40, type -> {
             if (type.equals(WALL) || type.equals(BRICK))
                 return CellState.NOT_WALKABLE;
 
             return CellState.WALKABLE;
         });
 
-        player = spawn("cat");
+        player = FXGL.spawn("cat");
         playerComponent = player.getComponent(PlayerComponent.class);
     }
 
     @Override
     protected void initPhysics() {
-        FXGL.onCollision(EntityType.CAT, EntityType.MOUSE, (cat, mouse) -> {
+        FXGL.onCollision(CAT, EntityType.MOUSE, (cat, mouse) -> {
             cat.removeFromWorld();
             mouse.removeFromWorld();
             FXGL.showMessage("YOU DIED!", () -> {
-                getGameController().startNewGame();
+                FXGL.getGameController().startNewGame();
             });
         });
-        FXGL.onCollision(EntityType.CAT, EntityType.FIRE, (cat, bomb) -> {
+        FXGL.onCollision(CAT, EntityType.FIRE, (cat, bomb) -> {
             cat.removeFromWorld();
             bomb.removeFromWorld();
             FXGL.showMessage("YOU DIED!", () -> {
-                getGameController().startNewGame();
+                FXGL.getGameController().startNewGame();
             });
         });
-        FXGL.onCollision(EntityType.CAT, BRICK, (cat, brick) -> {
-
+        FXGL. onCollisionCollectible(CAT, POWER_UP_BOMB, powerup -> {
+            playerComponent.increaseBombsMaximum();
         });
+        FXGL.onCollisionCollectible(CAT, POWER_UP_RADIUS, powerup -> {
+            playerComponent.increaseRadiusMaximum();
+        });
+    }
+
+    public void onBrickDestroyed(Entity brick) {
+        int cellX = (int)((brick.getX() + 20) / BRICK_SIZE);
+        int cellY = (int)((brick.getY() + 20) / BRICK_SIZE);
+        grid.get(cellX, cellY).setState(CellState.WALKABLE);
+
+        if(FXGLMath.randomBoolean()){
+            if(FXGLMath.randomBoolean()){
+                FXGL.spawn("powerUpBomb", cellX * 40, cellY * 40);
+                return;
+            }
+            FXGL.spawn("powerUpRadius", cellX * 40, cellY * 40);
+        }
     }
 }
