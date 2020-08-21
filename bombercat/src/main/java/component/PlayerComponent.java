@@ -56,5 +56,5 @@ public class PlayerComponent extends Component {
     public void increaseBombsPlaced(){bombsPlaced++;}
     public void decreaseBombsPlaced(){bombsPlaced--;}
     public void increaseBombsMaximum(){bombsMaximum++;}
-    public void increaseRadiusMaximum(){explosionRadius = explosionRadius * 2;}
+    public void increaseRadiusMaximum(){explosionRadius = explosionRadius + radius;}
 }

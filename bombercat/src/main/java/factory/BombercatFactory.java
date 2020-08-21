@@ -21,7 +21,7 @@ import static entity.EntityType.*;
 
 public class BombercatFactory implements EntityFactory {
     private static final int POINT_SIZE = 20;
-    private static final int CAT_SPEED = 480;
+    private static final int CAT_SPEED = 180;
 
     @Spawns("background")
     public Entity newBackground(SpawnData data) {

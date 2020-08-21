@@ -118,11 +118,19 @@ public class BombercatApp extends GameApplication{
                 FXGL.getGameController().startNewGame();
             });
         });
-        FXGL. onCollisionCollectible(CAT, POWER_UP_BOMB, powerup -> {
-            playerComponent.increaseBombsMaximum();
+        FXGL.onCollision(CAT, POWER_UP_BOMB, (cat, powerUp) -> {
+            if (Math.abs(powerUp.getPosition().getX() - cat.getPosition().getX()) < 20 &&
+                    Math.abs(powerUp.getPosition().getY() - cat.getPosition().getY()) < 20) {
+                playerComponent.increaseBombsMaximum();
+                powerUp.removeFromWorld();
+            }
         });
-        FXGL.onCollisionCollectible(CAT, POWER_UP_RADIUS, powerup -> {
-            playerComponent.increaseRadiusMaximum();
+        FXGL.onCollision(CAT, POWER_UP_RADIUS, (cat, powerUpRadius) -> {
+            if (Math.abs(powerUpRadius.getPosition().getX() - cat.getPosition().getX()) < 20 &&
+                    Math.abs(powerUpRadius.getPosition().getY() - cat.getPosition().getY()) < 20) {
+                playerComponent.increaseRadiusMaximum();
+                powerUpRadius.removeFromWorld();
+            }
         });
     }
 
