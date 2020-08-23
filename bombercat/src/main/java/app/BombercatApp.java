@@ -51,12 +51,20 @@ public class BombercatApp extends GameApplication{
             protected void onAction() {
                 playerComponent.left();
             }
+            @Override
+            protected void onActionBegin() {
+                FXGL.play("cat_left.wav");
+            }
         }, KeyCode.A);
 
         FXGL.getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
                playerComponent.right();
+            }
+            @Override
+            protected void onActionBegin() {
+                FXGL.play("cat_right.wav");
             }
         }, KeyCode.D);
 
@@ -65,12 +73,20 @@ public class BombercatApp extends GameApplication{
             protected void onAction() {
                 playerComponent.up();
             }
+            @Override
+            protected void onActionBegin() {
+                FXGL.play("cat_left.wav");
+            }
         }, KeyCode.W);
 
         FXGL.getInput().addAction(new UserAction("Down") {
             @Override
             protected void onAction() {
                 playerComponent.down();
+            }
+            @Override
+            protected void onActionBegin() {
+                FXGL.play("cat_right.wav");
             }
         }, KeyCode.S);
         FXGL.getInput().addAction(new UserAction("Bomb") {
@@ -92,7 +108,7 @@ public class BombercatApp extends GameApplication{
         FXGL.spawn("background");
 
         grid = AStarGrid.fromWorld(FXGL.getGameWorld(), 600, 600, 40, 40, type -> {
-            if (type.equals(WALL) || type.equals(BRICK))
+            if (type.equals(WALL) || type.equals(BRICK) || type.equals(BOMB))
                 return CellState.NOT_WALKABLE;
 
             return CellState.WALKABLE;
@@ -100,6 +116,7 @@ public class BombercatApp extends GameApplication{
 
         player = FXGL.spawn("cat");
         playerComponent = player.getComponent(PlayerComponent.class);
+        FXGL.spawn("dog", 40, 120);
     }
 
     @Override
@@ -122,6 +139,7 @@ public class BombercatApp extends GameApplication{
             if (Math.abs(powerUp.getPosition().getX() - cat.getPosition().getX()) < 20 &&
                     Math.abs(powerUp.getPosition().getY() - cat.getPosition().getY()) < 20) {
                 playerComponent.increaseBombsMaximum();
+                FXGL.play("powerup1.wav");
                 powerUp.removeFromWorld();
             }
         });
@@ -129,6 +147,7 @@ public class BombercatApp extends GameApplication{
             if (Math.abs(powerUpRadius.getPosition().getX() - cat.getPosition().getX()) < 20 &&
                     Math.abs(powerUpRadius.getPosition().getY() - cat.getPosition().getY()) < 20) {
                 playerComponent.increaseRadiusMaximum();
+                FXGL.play("powerup2.wav");
                 powerUpRadius.removeFromWorld();
             }
         });

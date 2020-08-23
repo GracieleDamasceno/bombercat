@@ -1,11 +1,11 @@
 package component;
 
+import app.BombercatApp;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import app.BombercatApp;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.getGameTimer;

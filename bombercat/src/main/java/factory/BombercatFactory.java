@@ -1,5 +1,6 @@
 package factory;
 
+import app.BombercatApp;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
@@ -9,8 +10,9 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import component.BombComponent;
+import component.BossComponent;
+import component.EnemyComponent;
 import component.PlayerComponent;
-import app.BombercatApp;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -46,12 +48,22 @@ public class BombercatFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("dog")
+    public Entity newBoss(SpawnData data) {
+        return entityBuilder(data)
+                .type(DOG)
+                .viewWithBBox(texture("dog.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
+                .with(new BossComponent())
+                .build();
+    }
+
     @Spawns("mouse")
     public Entity newAdversary(SpawnData data) {
         return entityBuilder(data)
                 .type(MOUSE)
                 .collidable()
                 .viewWithBBox(texture("mouse.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
+                .with(new EnemyComponent())
                 .build();
     }
 

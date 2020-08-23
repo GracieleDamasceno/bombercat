@@ -31,6 +31,7 @@ public class BombComponent extends Component {
     }
 
     public void explosionEffect() {
+        FXGL.play("explosion.wav");
         BoundingBoxComponent boundingBoxComponent = entity.getBoundingBoxComponent();
         getGameWorld()
                 .getEntitiesInRange(boundingBoxComponent.range(radius, radius))
