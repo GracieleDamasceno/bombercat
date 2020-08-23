@@ -1,6 +1,7 @@
 package factory;
 
 import app.BombercatApp;
+import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
@@ -9,14 +10,12 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import component.BombComponent;
-import component.BossComponent;
-import component.EnemyComponent;
-import component.PlayerComponent;
+import component.*;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import static com.almasb.fxgl.dsl.FXGL.geto;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.texture;
 import static entity.EntityType.*;
@@ -50,20 +49,26 @@ public class BombercatFactory implements EntityFactory {
 
     @Spawns("dog")
     public Entity newBoss(SpawnData data) {
-        return entityBuilder(data)
+        Entity enemy =  entityBuilder(data)
                 .type(DOG)
+                .at(new Point2D(520,  520))
                 .viewWithBBox(texture("dog.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
-                .with(new BossComponent())
+                .with(new CellMoveComponent(BombercatApp.BRICK_SIZE, BombercatApp.BRICK_SIZE, 90))
+                .with(new AStarMoveComponent((FXGL.<BombercatApp>getAppCast().getGrid())))
+                .with(new AIComponent())
+                .with(new CollidableComponent(true))
                 .build();
+        enemy.setLocalAnchorFromCenter();
+        return enemy;
     }
 
     @Spawns("mouse")
     public Entity newAdversary(SpawnData data) {
         return entityBuilder(data)
                 .type(MOUSE)
-                .collidable()
                 .viewWithBBox(texture("mouse.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
-                .with(new EnemyComponent())
+                .with(new AIComponent().withDelay())
+                .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .build();
     }
 

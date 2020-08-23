@@ -13,6 +13,7 @@ import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import component.PlayerComponent;
 import entity.EntityType;
 import factory.BombercatFactory;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 
 import static entity.EntityType.*;
@@ -116,7 +117,7 @@ public class BombercatApp extends GameApplication{
 
         player = FXGL.spawn("cat");
         playerComponent = player.getComponent(PlayerComponent.class);
-        FXGL.spawn("dog", 40, 120);
+        FXGL.spawn("dog");
     }
 
     @Override
@@ -134,6 +135,19 @@ public class BombercatApp extends GameApplication{
             FXGL.showMessage("YOU DIED!", () -> {
                 FXGL.getGameController().startNewGame();
             });
+        });
+        FXGL.onCollision(CAT, EntityType.DOG, (cat, dog) -> {
+            if (Math.abs(dog.getPosition().getX() - cat.getPosition().getX()) < 20 &&
+                    Math.abs(dog.getPosition().getY() - cat.getPosition().getY()) < 20) {
+                cat.removeFromWorld();
+                FXGL.showMessage("YOU DIED!", () -> {
+                    FXGL.getGameController().startNewGame();
+                });
+            }
+        });
+        FXGL.onCollision(DOG, FIRE, (dog, fire) -> {
+            dog.setPosition(new Point2D(520,  520));
+            dog.setLocalAnchorFromCenter();
         });
         FXGL.onCollision(CAT, POWER_UP_BOMB, (cat, powerUp) -> {
             if (Math.abs(powerUp.getPosition().getX() - cat.getPosition().getX()) < 20 &&
