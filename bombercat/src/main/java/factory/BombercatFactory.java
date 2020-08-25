@@ -1,7 +1,6 @@
 package factory;
 
 import app.BombercatApp;
-import com.almasb.fxgl.core.util.LazyValue;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
@@ -10,12 +9,13 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import component.*;
+import component.AIComponent;
+import component.BombComponent;
+import component.PlayerComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import static com.almasb.fxgl.dsl.FXGL.geto;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.texture;
 import static entity.EntityType.*;
@@ -64,12 +64,17 @@ public class BombercatFactory implements EntityFactory {
 
     @Spawns("mouse")
     public Entity newAdversary(SpawnData data) {
-        return entityBuilder(data)
+        Entity enemy = entityBuilder(data)
                 .type(MOUSE)
+                .at(new Point2D(520,  400))
                 .viewWithBBox(texture("mouse.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
+                .with(new CellMoveComponent(BombercatApp.BRICK_SIZE, BombercatApp.BRICK_SIZE, 50))
+                .with(new AStarMoveComponent((FXGL.<BombercatApp>getAppCast().getGrid())))
                 .with(new AIComponent().withDelay())
-                .with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
+                .with(new CollidableComponent(true))
                 .build();
+        enemy.setLocalAnchorFromCenter();
+        return enemy;
     }
 
     @Spawns("bomb")
