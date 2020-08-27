@@ -7,3 +7,5 @@
 /system
 *.class
 /target/*
+*.jar
+bombercat/target/*

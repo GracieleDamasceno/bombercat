@@ -15,15 +15,23 @@ import entity.EntityType;
 import factory.BombercatFactory;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.util.Duration;
 
+import java.util.Map;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
 import static entity.EntityType.*;
 
 
 public class BombercatApp extends GameApplication{
 
     public static final int WIDTH = 600; //600
-    public static final int HEIGHT = 600; //440
+    public static final int HEIGHT = 640; //440
     public static final int BRICK_SIZE = 40;
+    public static final int TIMER = 200;
+
 
     private AStarGrid grid;
     private PlayerComponent playerComponent;
@@ -43,6 +51,39 @@ public class BombercatApp extends GameApplication{
         settings.setVersion("0.1");
         settings.setWidth(WIDTH);
         settings.setHeight(HEIGHT);
+        settings.setFullScreenAllowed(true);
+        settings.setPreserveResizeRatio(true);
+    }
+
+    @Override
+    protected void initGameVars(Map<String, Object> vars) {
+        vars.put("score", 0);
+        vars.put("lives", 7);
+        vars.put("time", TIMER);
+    }
+
+    @Override
+    protected void initUI() {
+        Text scoreText = getUIFactoryService().newText("", Color.WHITE, 20);
+        scoreText.setTranslateX(10);
+        scoreText.setTranslateY(30);
+        scoreText.textProperty().bind(getip("score").asString("Score: [%d]"));
+
+        addUINode(scoreText);
+
+        Text timerText = getUIFactoryService().newText("", Color.WHITE, 25);
+        timerText.setTranslateX(275);
+        timerText.setTranslateY(30);
+        timerText.textProperty().bind(getip("time").asString("%d"));
+
+        addUINode(timerText);
+
+        Text livesText = getUIFactoryService().newText("", Color.WHITE, 20);
+        livesText.setTranslateX(510);
+        livesText.setTranslateY(30);
+        livesText.textProperty().bind(getip("lives").asString("Lives: [%d]"));
+
+        addUINode(livesText);
     }
 
     @Override
@@ -61,7 +102,7 @@ public class BombercatApp extends GameApplication{
         FXGL.getInput().addAction(new UserAction("Right") {
             @Override
             protected void onAction() {
-               playerComponent.right();
+               playerComponent.right();// loopBGM("cat_right.wav");
             }
             @Override
             protected void onActionBegin() {
@@ -90,6 +131,7 @@ public class BombercatApp extends GameApplication{
                 FXGL.play("cat_right.wav");
             }
         }, KeyCode.S);
+
         FXGL.getInput().addAction(new UserAction("Bomb") {
             @Override
             protected void onActionBegin() {
@@ -119,39 +161,51 @@ public class BombercatApp extends GameApplication{
         playerComponent = player.getComponent(PlayerComponent.class);
         FXGL.spawn("dog");
         FXGL.spawn("mouse");
+
+        run(() -> inc("time", -1), Duration.seconds(1));
+        getWorldProperties().<Integer>addListener("time", (old, now) -> {
+            if (now == 0) {
+                gameOver();
+            }
+        });
+        getWorldProperties().<Integer>addListener("lives", (prev, now) -> {
+            if (now == 0) {
+                gameOver();
+            }
+        });
+    }
+
+    private void gameOver() {
+        FXGL.showMessage("YOU DIED!", () -> {
+            FXGL.getGameController().startNewGame();
+        });
     }
 
     @Override
     protected void initPhysics() {
         FXGL.onCollision(CAT, EntityType.MOUSE, (cat, mouse) -> {
-            cat.removeFromWorld();
+            hitTaken(cat, 1);
             mouse.removeFromWorld();
-            FXGL.showMessage("YOU DIED!", () -> {
-                FXGL.getGameController().startNewGame();
-            });
         });
+
         FXGL.onCollision(CAT, EntityType.FIRE, (cat, bomb) -> {
-            cat.removeFromWorld();
-            bomb.removeFromWorld();
-            FXGL.showMessage("YOU DIED!", () -> {
-                FXGL.getGameController().startNewGame();
-            });
+           hitTaken(cat, 1);
         });
+
         FXGL.onCollision(CAT, EntityType.DOG, (cat, dog) -> {
             if (Math.abs(dog.getPosition().getX() - cat.getPosition().getX()) < 20 &&
                     Math.abs(dog.getPosition().getY() - cat.getPosition().getY()) < 20) {
-                cat.removeFromWorld();
-                FXGL.showMessage("YOU DIED!", () -> {
-                    FXGL.getGameController().startNewGame();
-                });
+                hitTaken(cat, 3);
             }
         });
         FXGL.onCollision(DOG, FIRE, (dog, fire) -> {
-            dog.setPosition(new Point2D(520,  520));
+            dog.setPosition(new Point2D(520,  560));
             dog.setLocalAnchorFromCenter();
+            inc("score", +5000);
         });
 
         FXGL.onCollision(MOUSE, FIRE, (mouse, fire) -> {
+            inc("score", +1000);
             mouse.removeFromWorld();
         });
         FXGL.onCollision(CAT, POWER_UP_BOMB, (cat, powerUp) -> {
@@ -170,6 +224,12 @@ public class BombercatApp extends GameApplication{
                 powerUpRadius.removeFromWorld();
             }
         });
+    }
+
+    private void hitTaken(Entity cat, int livesLost) {
+        cat.setPosition(new Point2D(BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE*2));
+        cat.setLocalAnchorFromCenter();
+        inc("lives", -livesLost);
     }
 
     public void onBrickDestroyed(Entity brick) {
