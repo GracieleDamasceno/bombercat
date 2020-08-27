@@ -37,7 +37,7 @@ public class BombercatFactory implements EntityFactory {
     public Entity newPlayer(SpawnData data) {
         return entityBuilder(data)
                 .atAnchored(new Point2D(POINT_SIZE, POINT_SIZE), new Point2D(POINT_SIZE, POINT_SIZE))
-                .at(new Point2D( BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
+                .at(new Point2D( 40,  40))
                 .type(CAT)
                 .viewWithBBox(texture("cutecat2.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .with(new CollidableComponent(true))
