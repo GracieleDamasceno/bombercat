@@ -17,7 +17,6 @@ public class BombComponent extends Component {
     private boolean hasWall;
     private boolean brokeBrick;
 
-
     public BombComponent(int radius) {
         this.radius = radius;
     }
@@ -37,10 +36,6 @@ public class BombComponent extends Component {
     }
 
     private void removeBrick(double x, double y) {
-        Entity fire = FXGL.spawn("fire", x, y);
-        FXGL.getGameTimer().runOnceAfter(() -> {
-            fire.removeFromWorld();
-        }, Duration.seconds(0.5));
         getGameWorld()
             .getEntitiesAt(new Point2D(x, y))
             .stream()
@@ -56,13 +51,19 @@ public class BombComponent extends Component {
                     return;
                 }
             });
+
+        if (!this.hasWall) {
+            Entity fire = FXGL.spawn("fire", x, y);
+            FXGL.getGameTimer().runOnceAfter(() -> {
+                fire.removeFromWorld();
+            }, Duration.seconds(0.5));
+        }
     }
 
     private void removeBrickYDown(double x, double y) {
         this.hasWall = false;
         this.brokeBrick = false;
-        double distance = 120;
-        for (double i = y; i <= y + distance; i = i + 40) {
+        for (double i = y; i <= y + this.radius; i = i + 40) {
             if (i > 520 || this.hasWall || this.brokeBrick) {
                 break;
             }
@@ -74,8 +75,7 @@ public class BombComponent extends Component {
     private void removeBrickXLeft(double x, double y) {
         this.hasWall = false;
         this.brokeBrick = false;
-        double distance = 120;
-        for (double i = x; i <= x + distance; i = i + 40) {
+        for (double i = x; i <= x + this.radius; i = i + 40) {
             if (i > 520 || this.hasWall || this.brokeBrick) {
                 break;
             }
@@ -87,8 +87,7 @@ public class BombComponent extends Component {
     private void removeBrickXRight(double x, double y) {
         this.hasWall = false;
         this.brokeBrick = false;
-        double distance = 120;
-        for (double i = x; i >= x - distance; i = i - 40) {
+        for (double i = x; i >= x - this.radius; i = i - 40) {
             if (i < 40 || this.hasWall || this.brokeBrick) {
                 break;
             }
@@ -100,8 +99,7 @@ public class BombComponent extends Component {
     private void removeBrickYUp(double x, double y) {
         this.hasWall = false;
         this.brokeBrick = false;
-        double distance = 120;
-        for (double i = y; i >= y - distance; i = i - 40) {
+        for (double i = y; i >= y - this.radius; i = i - 40) {
             if (i < 40 || this.hasWall || this.brokeBrick) {
                 break;
             }

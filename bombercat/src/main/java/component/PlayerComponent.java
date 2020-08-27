@@ -16,8 +16,7 @@ public class PlayerComponent extends Component {
     private CellMoveComponent cell;
     private int bombsPlaced = 0 ;
     private int bombsMaximum = 1;
-    private int radius = 40;
-    private int explosionRadius = 20;
+    private int explosionRadius = 40;
 
     public void left() {
         getEntity().setScaleX(-1);
@@ -38,13 +37,14 @@ public class PlayerComponent extends Component {
     }
 
     public void placeBomb() {
-        if(bombsPlaced >= bombsMaximum){
+        int radius = 40;
+        if (this.bombsPlaced >= this.bombsMaximum){
             return;
         }
         increaseBombsPlaced();
         double x = cell.getCellX() * radius;
         double y = cell.getCellY() * radius;
-        Entity bomb = spawn("bomb", new SpawnData(x, y).put("radius", explosionRadius));
+        Entity bomb = spawn("bomb", new SpawnData(x, y).put("radius", this.explosionRadius));
         getGameTimer().runOnceAfter(() -> {
             bomb.getComponent(BombComponent.class).explode(x, y, bomb);
             decreaseBombsPlaced();
@@ -52,8 +52,8 @@ public class PlayerComponent extends Component {
 
     }
 
-    public void increaseBombsPlaced(){bombsPlaced++;}
-    public void decreaseBombsPlaced(){bombsPlaced--;}
-    public void increaseBombsMaximum(){bombsMaximum++;}
-    public void increaseRadiusMaximum(){explosionRadius = explosionRadius + radius;}
+    public void increaseBombsPlaced(){this.bombsPlaced++;}
+    public void decreaseBombsPlaced(){this.bombsPlaced--;}
+    public void increaseBombsMaximum(){this.bombsMaximum++;}
+    public void increaseRadiusMaximum(){this.explosionRadius = this.explosionRadius + 40;}
 }
