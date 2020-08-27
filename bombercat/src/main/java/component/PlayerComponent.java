@@ -17,7 +17,7 @@ public class PlayerComponent extends Component {
     private int bombsPlaced = 0 ;
     private int bombsMaximum = 1;
     private int radius = 40;
-    private int explosionRadius = BombercatApp.BRICK_SIZE;
+    private int explosionRadius = 20;
 
     public void left() {
         getEntity().setScaleX(-1);
@@ -42,13 +42,12 @@ public class PlayerComponent extends Component {
             return;
         }
         increaseBombsPlaced();
-        Entity bomb = spawn("bomb", new SpawnData(cell.getCellX() * radius, cell.getCellY() * radius).put("radius", explosionRadius / 2));
+        double x = cell.getCellX() * radius;
+        double y = cell.getCellY() * radius;
+        Entity bomb = spawn("bomb", new SpawnData(x, y).put("radius", explosionRadius));
         getGameTimer().runOnceAfter(() -> {
-            bomb.getComponent(BombComponent.class).explode();
-            bomb.getComponent(BombComponent.class).explosionEffect();
+            bomb.getComponent(BombComponent.class).explode(x, y, bomb);
             decreaseBombsPlaced();
-            System.out.println("Bombs max: "+bombsMaximum+" bombs now: "+bombsPlaced);
-            System.out.println("Radius: "+explosionRadius);
         }, Duration.seconds(2));
 
     }

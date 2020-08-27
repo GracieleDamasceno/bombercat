@@ -6,43 +6,108 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import entity.EntityType;
 import app.BombercatApp;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
 
 public class BombComponent extends Component {
     private int radius;
+    private boolean hasWall;
+    private boolean brokeBrick;
+
 
     public BombComponent(int radius) {
         this.radius = radius;
     }
 
-    public void explode() {
-        BoundingBoxComponent boundingBoxComponent = entity.getBoundingBoxComponent();
-        getGameWorld()
-                .getEntitiesInRange(boundingBoxComponent.range(radius, radius))
-                .stream()
-                .filter(e -> e.isType(EntityType.BRICK))
-                .forEach(e -> {
-                    FXGL.<BombercatApp>getAppCast().onBrickDestroyed(e);
-                    e.removeFromWorld();
-                });
-        entity.removeFromWorld();
+    public void explode(double x, double y, Entity bomb) {
+        FXGL.play("explosion.wav");
+        FXGL.getGameTimer().runOnceAfter(() -> {
+            bomb.removeFromWorld();
+        }, Duration.seconds(0.5));
+
+        System.out.println(" x e y Original" + x + " " + y);
+
+        removeBrickXLeft(x,y);
+        removeBrickXRight(x,y);
+        removeBrickYDown(x,y);
+        removeBrickYUp(x,y);
     }
 
-    public void explosionEffect() {
-        FXGL.play("explosion.wav");
-        BoundingBoxComponent boundingBoxComponent = entity.getBoundingBoxComponent();
+    private void removeBrick(double x, double y) {
+        Entity fire = FXGL.spawn("fire", x, y);
+        FXGL.getGameTimer().runOnceAfter(() -> {
+            fire.removeFromWorld();
+        }, Duration.seconds(0.5));
         getGameWorld()
-                .getEntitiesInRange(boundingBoxComponent.range(radius, radius))
-                .stream()
-                .forEach(e -> {
-                    Entity fire = FXGL.spawn("fire", e.getX(), e.getY());
-                    FXGL.getGameTimer().runOnceAfter(() -> {
-                        fire.removeFromWorld();
-                    }, Duration.seconds(0.5));
-                });
-        entity.removeFromWorld();
+            .getEntitiesAt(new Point2D(x, y))
+            .stream()
+            .forEach(e -> {
+                if (e.isType(EntityType.WALL)) {
+                    this.hasWall = true;
+                    return;
+                }
+                if (e.isType(EntityType.BRICK)) {
+                    FXGL.<BombercatApp>getAppCast().onBrickDestroyed(e);
+                    e.removeFromWorld();
+                    this.brokeBrick = true;
+                    return;
+                }
+            });
+    }
+
+    private void removeBrickYDown(double x, double y) {
+        this.hasWall = false;
+        this.brokeBrick = false;
+        double distance = 120;
+        for (double i = y; i <= y + distance; i = i + 40) {
+            if (i > 520 || this.hasWall || this.brokeBrick) {
+                break;
+            }
+
+            removeBrick(x, i);
+        }
+    }
+
+    private void removeBrickXLeft(double x, double y) {
+        this.hasWall = false;
+        this.brokeBrick = false;
+        double distance = 120;
+        for (double i = x; i <= x + distance; i = i + 40) {
+            if (i > 520 || this.hasWall || this.brokeBrick) {
+                break;
+            }
+
+            removeBrick(i, y);
+        }
+    }
+
+    private void removeBrickXRight(double x, double y) {
+        this.hasWall = false;
+        this.brokeBrick = false;
+        double distance = 120;
+        for (double i = x; i >= x - distance; i = i - 40) {
+            if (i < 40 || this.hasWall || this.brokeBrick) {
+                break;
+            }
+
+            removeBrick(i, y);
+        }
+    }
+
+    private void removeBrickYUp(double x, double y) {
+        this.hasWall = false;
+        this.brokeBrick = false;
+        double distance = 120;
+        for (double i = y; i >= y - distance; i = i - 40) {
+            if (i < 40 || this.hasWall || this.brokeBrick) {
+                break;
+            }
+
+            removeBrick(x, i);
+        }
     }
 
 }
