@@ -64,7 +64,7 @@ public class BombComponent extends Component {
         this.hasWall = false;
         this.brokeBrick = false;
         for (double i = y; i <= y + this.radius; i = i + 40) {
-            if (i > 520 || this.hasWall || this.brokeBrick) {
+            if (i > (BombercatApp.WIDTH - 80) || this.hasWall || this.brokeBrick) {
                 break;
             }
 
@@ -76,7 +76,7 @@ public class BombComponent extends Component {
         this.hasWall = false;
         this.brokeBrick = false;
         for (double i = x; i <= x + this.radius; i = i + 40) {
-            if (i > 520 || this.hasWall || this.brokeBrick) {
+            if (i > (BombercatApp.WIDTH - 80) || this.hasWall || this.brokeBrick) {
                 break;
             }
 

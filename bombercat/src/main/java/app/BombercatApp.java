@@ -185,11 +185,13 @@ public class BombercatApp extends GameApplication{
     protected void initPhysics() {
         FXGL.onCollision(CAT, EntityType.MOUSE, (cat, mouse) -> {
             hitTaken(cat, 1);
-            mouse.removeFromWorld();
         });
 
         FXGL.onCollision(CAT, EntityType.FIRE, (cat, bomb) -> {
-           hitTaken(cat, 1);
+            if (Math.abs(bomb.getPosition().getX() - cat.getPosition().getX()) < 20 &&
+                    Math.abs(bomb.getPosition().getY() - cat.getPosition().getY()) < 20) {
+                hitTaken(cat, 1);
+            }
         });
 
         FXGL.onCollision(CAT, EntityType.DOG, (cat, dog) -> {
@@ -205,8 +207,12 @@ public class BombercatApp extends GameApplication{
         });
 
         FXGL.onCollision(MOUSE, FIRE, (mouse, fire) -> {
-            inc("score", +1000);
-            mouse.removeFromWorld();
+            if (Math.abs(fire.getPosition().getX() - mouse.getPosition().getX()) < 20 &&
+                    Math.abs(fire.getPosition().getY() - mouse.getPosition().getY()) < 20) {
+                inc("score", +1000);
+                mouse.removeFromWorld();
+            }
+
         });
         FXGL.onCollision(CAT, POWER_UP_BOMB, (cat, powerUp) -> {
             if (Math.abs(powerUp.getPosition().getX() - cat.getPosition().getX()) < 20 &&
