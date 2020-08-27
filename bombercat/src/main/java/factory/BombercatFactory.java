@@ -35,23 +35,23 @@ public class BombercatFactory implements EntityFactory {
 
     @Spawns("cat")
     public Entity newPlayer(SpawnData data) {
-        Entity player =  entityBuilder(data)
-                .at(new Point2D( BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE*2))
+        return entityBuilder(data)
                 .type(CAT)
+                .atAnchored(new Point2D(POINT_SIZE, POINT_SIZE), new Point2D(POINT_SIZE, POINT_SIZE))
+                .at(new Point2D(BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE*2))
                 .viewWithBBox(texture("cutecat2.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .with(new CollidableComponent(true))
                 .with(new CellMoveComponent( BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE, CAT_SPEED))
                 .with(new AStarMoveComponent(FXGL.<BombercatApp>getAppCast().getGrid()))
                 .with(new PlayerComponent())
                 .build();
-        player.setLocalAnchorFromCenter();
-        return player;
     }
 
     @Spawns("dog")
     public Entity newBoss(SpawnData data) {
-        Entity enemy =  entityBuilder(data)
+        return entityBuilder(data)
                 .type(DOG)
+                .atAnchored(new Point2D(POINT_SIZE, POINT_SIZE), new Point2D(POINT_SIZE, POINT_SIZE))
                 .at(new Point2D(520,  560))
                 .viewWithBBox(texture("dog.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .with(new CellMoveComponent(BombercatApp.BRICK_SIZE, BombercatApp.BRICK_SIZE, 90))
@@ -59,14 +59,13 @@ public class BombercatFactory implements EntityFactory {
                 .with(new AIComponent())
                 .with(new CollidableComponent(true))
                 .build();
-        enemy.setLocalAnchorFromCenter();
-        return enemy;
     }
 
     @Spawns("mouse")
     public Entity newAdversary(SpawnData data) {
-        Entity enemy = entityBuilder(data)
+        return entityBuilder(data)
                 .type(MOUSE)
+                .atAnchored(new Point2D(POINT_SIZE, POINT_SIZE), new Point2D(POINT_SIZE, POINT_SIZE))
                 .at(new Point2D(520,  400))
                 .viewWithBBox(texture("mouse.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .with(new CellMoveComponent(BombercatApp.BRICK_SIZE, BombercatApp.BRICK_SIZE, 50))
@@ -74,8 +73,6 @@ public class BombercatFactory implements EntityFactory {
                 .with(new AIComponent().withDelay())
                 .with(new CollidableComponent(true))
                 .build();
-        enemy.setLocalAnchorFromCenter();
-        return enemy;
     }
 
     @Spawns("bomb")
