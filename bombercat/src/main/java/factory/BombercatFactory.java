@@ -2,14 +2,11 @@ package factory;
 
 import app.BombercatApp;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.dsl.components.ExpireCleanComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.particle.ParticleComponent;
-import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import component.AIComponent;
@@ -18,9 +15,9 @@ import component.PlayerComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
-import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
+import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGLForKtKt.texture;
 import static entity.EntityType.*;
 
 public class BombercatFactory implements EntityFactory {
@@ -95,22 +92,11 @@ public class BombercatFactory implements EntityFactory {
 
     @Spawns("fire")
     public Entity newExplosion(SpawnData data) {
-        var emitter = ParticleEmitters.newExplosionEmitter(350);
-        emitter.setMaxEmissions(1);
-        emitter.setSize(2, 10);
-        emitter.setStartColor(Color.WHITE);
-        emitter.setEndColor(Color.BLUE);
-        emitter.setSpawnPointFunction(i -> new Point2D(64, 64));
-
-        Entity fire =  entityBuilder(data)
+        return entityBuilder(data)
                 .type(FIRE)
                 .collidable()
-                .view(FXGL.texture("explosion.png").toAnimatedTexture(16, Duration.seconds(0.66)).play())
-                .with(new ExpireCleanComponent(Duration.seconds(0.66)))
-                .with(new ParticleComponent(emitter))
+                .viewWithBBox(texture("fire.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .build();
-        fire.setLocalAnchorFromCenter();
-        return fire;
     }
 
     @Spawns("w")
