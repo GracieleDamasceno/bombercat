@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.entity.level.text.TextLevelLoader;
 import com.almasb.fxgl.input.UserAction;
@@ -31,7 +32,6 @@ public class BombercatApp extends GameApplication{
     public static final int HEIGHT = 640; //440
     public static final int BRICK_SIZE = 40;
     public static final int TIMER = 200;
-
 
     private AStarGrid grid;
     private PlayerComponent playerComponent;
@@ -160,7 +160,9 @@ public class BombercatApp extends GameApplication{
         player = FXGL.spawn("cat");
         playerComponent = player.getComponent(PlayerComponent.class);
         FXGL.spawn("dog");
-        FXGL.spawn("mouse");
+        FXGL.spawn("mouse", new SpawnData(520, 200));
+        FXGL.spawn("mouse", new SpawnData(420, 400));
+        FXGL.spawn("mouse", new SpawnData(320, 80));
 
         run(() -> inc("time", -1), Duration.seconds(1));
         getWorldProperties().<Integer>addListener("time", (old, now) -> {
@@ -233,8 +235,9 @@ public class BombercatApp extends GameApplication{
     }
 
     private void hitTaken(Entity cat, int livesLost) {
-        cat.setPosition(new Point2D(BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE*2));
-        cat.setLocalAnchorFromCenter();
+        cat.removeFromWorld();
+        this.player = FXGL.spawn("cat");
+        this.playerComponent = this.player.getComponent(PlayerComponent.class);
         inc("lives", -livesLost);
     }
 
