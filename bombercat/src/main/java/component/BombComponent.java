@@ -27,8 +27,6 @@ public class BombComponent extends Component {
             bomb.removeFromWorld();
         }, Duration.seconds(0.5));
 
-        System.out.println(" x e y Original" + x + " " + y);
-
         removeBrickXLeft(x,y);
         removeBrickXRight(x,y);
         removeBrickYDown(x,y);

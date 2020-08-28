@@ -54,7 +54,7 @@ public class BombercatFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(DOG)
                 .atAnchored(new Point2D(POINT_SIZE, POINT_SIZE), new Point2D(POINT_SIZE, POINT_SIZE))
-                .at(new Point2D(520,  560))
+                .at(new Point2D(data.getX(),  data.getY()))
                 .viewWithBBox(texture("dog.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .with(new CellMoveComponent(BombercatApp.BRICK_SIZE, BombercatApp.BRICK_SIZE, 90))
                 .with(new AStarMoveComponent((FXGL.<BombercatApp>getAppCast().getGrid())))

@@ -159,7 +159,7 @@ public class BombercatApp extends GameApplication{
 
         player = FXGL.spawn("cat");
         playerComponent = player.getComponent(PlayerComponent.class);
-        FXGL.spawn("dog");
+        FXGL.spawn("dog", new SpawnData(520, 560));
         FXGL.spawn("mouse", new SpawnData(520, 200));
         FXGL.spawn("mouse", new SpawnData(420, 400));
         FXGL.spawn("mouse", new SpawnData(320, 80));
@@ -203,8 +203,8 @@ public class BombercatApp extends GameApplication{
             }
         });
         FXGL.onCollision(DOG, FIRE, (dog, fire) -> {
-            dog.setPosition(new Point2D(520,  560));
-            dog.setLocalAnchorFromCenter();
+            dog.removeFromWorld();
+            FXGL.spawn("dog", new SpawnData(320, 360));
             inc("score", +5000);
         });
 
