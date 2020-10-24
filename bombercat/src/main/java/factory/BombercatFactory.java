@@ -8,8 +8,6 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
-import com.almasb.fxgl.pathfinding.CellState;
-import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
 import component.AIComponent;
 import component.BombComponent;
@@ -82,6 +80,7 @@ public class BombercatFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(BOMB)
                 .viewWithBBox(texture("bomb.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
+                //.with(new AStarMoveComponent(new LazyValue<>(() -> geto("grid"))))
                 .with(new BombComponent(data.get("radius")))
                 .atAnchored(new Point2D(POINT_SIZE, POINT_SIZE), new Point2D(data.getX() + BombercatApp.BRICK_SIZE / 2, data.getY() +  BombercatApp.BRICK_SIZE / 2))
                 .build();
@@ -92,7 +91,7 @@ public class BombercatFactory implements EntityFactory {
     public Entity newExplosion(SpawnData data) {
         return entityBuilder(data)
                 .type(FIRE)
-                .collidable()
+                .with(new CollidableComponent(true))
                 .viewWithBBox(texture("fire.png",  BombercatApp.BRICK_SIZE,  BombercatApp.BRICK_SIZE))
                 .build();
     }

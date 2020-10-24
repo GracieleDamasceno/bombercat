@@ -36,6 +36,4 @@ public class AIComponent  extends Component {
         isDelayed = true;
         return this;
     }
-
-
 }

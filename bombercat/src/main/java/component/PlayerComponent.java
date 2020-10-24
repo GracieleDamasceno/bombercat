@@ -1,16 +1,10 @@
 package component;
 
-import app.BombercatApp;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.pathfinding.CellMoveComponent;
-import com.almasb.fxgl.pathfinding.CellState;
-import com.almasb.fxgl.pathfinding.astar.AStarCell;
 import com.almasb.fxgl.pathfinding.astar.AStarMoveComponent;
-import factory.BombercatFactory;
-import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.getGameTimer;
@@ -43,23 +37,24 @@ public class PlayerComponent extends Component {
 
     public void placeBomb() {
         int radius = 40;
-        if (this.bombsPlaced >= this.bombsMaximum){
-            return;
-        }
+        if (this.bombsPlaced >= this.bombsMaximum) return;
+
         increaseBombsPlaced();
         double x = cell.getCellX() * radius;
         double y = cell.getCellY() * radius;
-        Entity bomb = spawn("bomb", new SpawnData(x, y).put("radius", this.explosionRadius));
-        // FXGL.<BombercatApp>getAppCast().getGrid().get((int) x, (int) y).setState(CellState.NOT_WALKABLE);
-        // FXGL.<BombercatApp>getAppCast().getGrid().set((int) x, (int) y, new AStarCell((int) x, (int) y, CellState.NOT_WALKABLE));
-        // System.out.println((int) x + "   " + (int) y);
-        // System.out.println(FXGL.<BombercatApp>getAppCast().getGrid().get((int) x, (int) y).getState());
+        Entity bomb = spawn("bomb", new SpawnData(x, y)
+                .put("radius", this.explosionRadius));
 
         getGameTimer().runOnceAfter(() -> {
             bomb.getComponent(BombComponent.class).explode(x, y, bomb);
             decreaseBombsPlaced();
         }, Duration.seconds(2));
+    }
 
+    // TODO Explodir bomba quando uma bomba tocar na outra
+    public void explodeBombCollide(Entity bomb) {
+        bomb.getComponent(BombComponent.class).explode(bomb.getX(), bomb.getY(), bomb);
+        decreaseBombsPlaced();
     }
 
     public void increaseBombsPlaced(){this.bombsPlaced++;}

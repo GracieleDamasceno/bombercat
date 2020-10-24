@@ -1,10 +1,10 @@
 111111111111111
 wwwwwwwwwwwwwww
-w0bbbb00000000w
+w000bb00000000w
 w0wbwbwbwbwbwbw
 w0bbbbbbbbbbbbw
-w0wbwbwbwbwbwbw
-w0000000000000w
+wbwbwbwbwbwbwbw
+wb000000000000w
 w0w0w0w0w0w0w0w
 w0000000000000w
 w0w0w0w0w0w0w0w

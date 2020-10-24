@@ -14,7 +14,6 @@ import com.almasb.fxgl.pathfinding.astar.AStarGrid;
 import component.PlayerComponent;
 import entity.EntityType;
 import factory.BombercatFactory;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -150,8 +149,8 @@ public class BombercatApp extends GameApplication{
 
         FXGL.spawn("background");
 
-        grid = AStarGrid.fromWorld(FXGL.getGameWorld(), 600, 600, 40, 40, type -> {
-            if (type.equals(WALL) || type.equals(BRICK) || type.equals(BOMB))
+        grid  = AStarGrid.fromWorld(FXGL.getGameWorld(), 600, 600, 40, 40, type -> {
+            if (type.equals(WALL) || type.equals(BRICK))
                 return CellState.NOT_WALKABLE;
 
             return CellState.WALKABLE;
@@ -160,7 +159,7 @@ public class BombercatApp extends GameApplication{
         player = FXGL.spawn("cat");
         playerComponent = player.getComponent(PlayerComponent.class);
         FXGL.spawn("dog", new SpawnData(520, 560));
-        FXGL.spawn("mouse", new SpawnData(520, 200));
+        FXGL.spawn("mouse", new SpawnData(520, 240));
         FXGL.spawn("mouse", new SpawnData(420, 400));
         FXGL.spawn("mouse", new SpawnData(320, 80));
 
@@ -171,7 +170,7 @@ public class BombercatApp extends GameApplication{
             }
         });
         getWorldProperties().<Integer>addListener("lives", (prev, now) -> {
-            if (now == 0) {
+            if (now <= 0) {
                 gameOver();
             }
         });
